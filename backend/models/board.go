@@ -7,17 +7,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type Task struct {
+type Board struct {
 	ID        uuid.UUID `gorm:"type:uuid;primary_key;" json:"id"`
 	Title     string    `json:"title" binding:"required"`
-	Content   string    `gorm:"type:text" json:"content"`
-	Completed bool      `gorm:"default:false" json:"completed"`
-	BoardID   uuid.UUID `gorm:"type:uuid" json:"board_id"`
+	Tasks     []Task    `json:"tasks,omitempty"` // Panoya ait görevleri yüklemek için
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func (task *Task) BeforeCreate(tx *gorm.DB) (err error) {
-	task.ID = uuid.New()
+func (board *Board) BeforeCreate(tx *gorm.DB) (err error) {
+	board.ID = uuid.New()
 	return
 }

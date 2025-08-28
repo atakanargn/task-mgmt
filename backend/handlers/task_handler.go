@@ -22,6 +22,11 @@ func CreateTask(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	// Gelen JSON'da board_id olmalı.
+	if task.BoardID == uuid.Nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "board_id is required"})
+		return
+	}
 	database.DB.Create(&task)
 	c.JSON(http.StatusCreated, task)
 }
@@ -35,8 +40,10 @@ func UpdateTask(c *gin.Context) {
 	}
 
 	var input struct {
-		Title     *string `json:"title"`
-		Completed *bool   `json:"completed"`
+		Title     *string    `json:"title"`
+		Content   *string    `json:"content"`
+		Completed *bool      `json:"completed"`
+		BoardID   *uuid.UUID `json:"board_id"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -47,8 +54,14 @@ func UpdateTask(c *gin.Context) {
 	if input.Title != nil {
 		task.Title = *input.Title
 	}
+	if input.Content != nil {
+		task.Content = *input.Content
+	}
 	if input.Completed != nil {
 		task.Completed = *input.Completed
+	}
+	if input.BoardID != nil {
+		task.BoardID = *input.BoardID
 	}
 
 	database.DB.Save(&task)

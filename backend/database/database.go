@@ -28,6 +28,6 @@ func Connect() {
 	}
 
 	log.Println("Database connection successful.")
-	DB.AutoMigrate(&models.Task{})
+	DB.AutoMigrate(&models.Board{}, &models.Task{})
 	log.Println("Database migrated.")
 }

@@ -1,53 +1,35 @@
 <script setup lang="ts">
-import { useTaskStore } from "../stores/taskStore";
+import type { Task } from "../stores/boardStore";
+import { useBoardStore } from "../stores/boardStore";
+// Heroicons'u import edelim
+import { DocumentTextIcon, TrashIcon } from "@heroicons/vue/24/outline";
 
-import type { Task } from "../stores/taskStore";
+const props = defineProps<{ task: Task; boardId: string }>();
+const boardStore = useBoardStore();
 
-const props = defineProps<{
-  task: Task;
-}>();
-
-const taskStore = useTaskStore();
-
-const toggleCompleted = () => {
-  const updatedTask = { ...props.task, completed: !props.task.completed };
-  taskStore.updateTask(updatedTask);
+const openModal = () => {
+  boardStore.selectTask(props.task);
 };
 </script>
-
 <template>
   <div
-    class="flex items-center justify-between p-3 bg-white rounded-lg shadow-sm hover:shadow-md transition-shadow"
+    @click="openModal"
+    class="group relative flex flex-col p-3 bg-white rounded-lg shadow-sm hover:shadow-lg transition-shadow duration-200 cursor-pointer"
   >
-    <div class="flex items-center gap-3">
-      <input
-        type="checkbox"
-        :checked="task.completed"
-        @change="toggleCompleted"
-        class="h-5 w-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-      />
-      <span :class="{ 'line-through text-gray-500': task.completed }">
-        {{ task.title }}
-      </span>
-    </div>
-    <button
-      @click="taskStore.deleteTask(task.id)"
-      class="text-gray-400 hover:text-red-500"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-5 w-5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+    <div class="flex items-start justify-between">
+      <p class="text-base text-slate-800 break-words">{{ task.title }}</p>
+      <button
+        @click.stop="boardStore.deleteTask(boardId, task.id)"
+        class="absolute top-2 right-2 p-1 rounded-full text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M6 18L18 6M6 6l12 12"
-        />
-      </svg>
-    </button>
+        <!-- Eski SVG yerine Heroicon component'i -->
+        <TrashIcon class="h-5 w-5" />
+      </button>
+    </div>
+
+    <div v-if="task.content" class="mt-2">
+      <!-- Eski SVG yerine Heroicon component'i ve daha küçük boyut -->
+      <DocumentTextIcon class="h-4 w-4 text-gray-400" />
+    </div>
   </div>
 </template>

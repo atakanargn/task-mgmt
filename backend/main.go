@@ -20,6 +20,9 @@ func main() {
 
 	api := router.Group("/api")
 	{
+		api.GET("/boards", handlers.GetBoards)
+		api.POST("/boards", handlers.CreateBoard)
+
 		api.GET("/tasks", handlers.GetTasks)
 		api.POST("/tasks", handlers.CreateTask)
 		api.PATCH("/tasks/:id", handlers.UpdateTask)
